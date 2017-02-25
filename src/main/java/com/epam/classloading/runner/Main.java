@@ -70,10 +70,12 @@ public class Main {
     }
 
     private static void showMenu() {
+        LOG.info("********************************");
         LOG.info("Please select the option:");
         LOG.info("1 to load class from Module1.jar");
         LOG.info("2 to load class from Module2.jar");
         LOG.info("3 to load class from Module3.jar");
         LOG.info("4 to exit");
+        LOG.info("********************************");
     }
 }
