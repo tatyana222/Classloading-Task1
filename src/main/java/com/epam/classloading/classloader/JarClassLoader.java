@@ -1,5 +1,7 @@
 package com.epam.classloading.classloader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,28 +13,32 @@ import java.util.jar.JarFile;
 
 public class JarClassLoader extends ClassLoader {
 
+    private static final Logger LOG = LogManager.getLogger(JarClassLoader.class);
+    private static final String PATH_TO_JARS = "jars/";
+
     private Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
+    private ClassLoader parent;
 
     private String jarFileName;
-    private String pathToJars;
 
-    public JarClassLoader(String jarFileName, String pathToJars) {
+    public JarClassLoader(String jarFileName, ClassLoader parent) {
+        super(parent);
         this.jarFileName = jarFileName;
-        this.pathToJars = pathToJars;
+        this.parent = parent;
     }
 
     public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
         Class<?> result = classCache.get(name);
 
         if (result == null)
-            result = super.findSystemClass(name);
+            result = parent.loadClass(name);
 
-        System.out.println("== loadClass(" + name + ")");
+        LOG.debug("loadClass(" + name + ")");
         return result;
     }
 
     public void loadJar() throws IOException {
-        JarFile jarFile = new JarFile(pathToJars + jarFileName);
+        JarFile jarFile = new JarFile(PATH_TO_JARS + jarFileName);
 
         Enumeration<JarEntry> jarEntries = jarFile.entries();
 
@@ -58,7 +64,7 @@ public class JarClassLoader extends ClassLoader {
         if (size <= 0)
             return null;
         else if (size > Integer.MAX_VALUE) {
-            throw new IOException("Class size too long");
+            throw new IOException("Class size is too long");
         }
 
         byte[] buffer = new byte[(int) size];
