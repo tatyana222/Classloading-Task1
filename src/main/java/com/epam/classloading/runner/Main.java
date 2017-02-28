@@ -4,14 +4,18 @@ import com.epam.classloading.classloader.JarClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Scanner;
 
 public class Main {
 
     private static final Logger LOG = LogManager.getLogger(Main.class);
+    private static final String PATH_TO_JARS = "jars/";
 
     public static void main(String[] args) throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
 
@@ -56,6 +60,19 @@ public class Main {
         runMethod.invoke(moduleInstance);
 
         LOG.debug("Classloader: " + clazz.getClassLoader());
+
+        // Instead of our own classloader we can also use URLClassloader. It's doing the same job
+        // But for more flexibility custom classloader can be used
+
+//        URL jarLocation = new URL("file:/" + PATH_TO_JARS + jarFileName);
+//        LOG.debug("Jar location: " + jarLocation);
+//        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] {new File(PATH_TO_JARS + jarFileName).toURI().toURL()});
+//
+//        Class<?> clazz = classLoader.loadClass("com.epam.modules.impl.Module");
+//        Object moduleInstance = clazz.newInstance();
+//
+//        Method runMethod = clazz.getDeclaredMethod("run");
+//        runMethod.invoke(moduleInstance);
     }
 
     private static void showMenu() {
