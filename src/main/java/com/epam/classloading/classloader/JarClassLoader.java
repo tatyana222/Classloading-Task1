@@ -27,6 +27,7 @@ public class JarClassLoader extends ClassLoader {
         this.parent = parent;
     }
 
+    @Override
     public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
         Class<?> result = classCache.get(name);
 
@@ -57,6 +58,7 @@ public class JarClassLoader extends ClassLoader {
                 }
             }
         }
+        jarFile.close();
     }
 
     private byte[] loadClassData(JarFile jarFile, JarEntry jarEntry) throws IOException {

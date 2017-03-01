@@ -23,7 +23,7 @@ public class Main {
 
         while(true) {
             showMenu();
-            int choice = Integer.valueOf(scanner.nextLine());
+            int choice = Integer.parseInt(scanner.nextLine());
 
             switch(choice) {
                 case 1:
@@ -36,12 +36,12 @@ public class Main {
                     selectJar("Module3.jar");
                     break;
                 case 4:
-                    System.out.println("Application will exit");
+                    LOG.info("Application will exit");
                     scanner.close();
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Selected option is not available");
+                    LOG.info("Selected option is not available");
                     break;
 
             }
