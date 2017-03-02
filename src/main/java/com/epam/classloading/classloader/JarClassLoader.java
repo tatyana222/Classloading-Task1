@@ -16,7 +16,7 @@ public class JarClassLoader extends ClassLoader {
     private static final Logger LOG = LogManager.getLogger(JarClassLoader.class);
     private static final String PATH_TO_JARS = "jars/";
 
-    private Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
+    private Map<String, Class<?>> classCache = new HashMap<>();
     private ClassLoader parent;
 
     private String jarFileName;
@@ -39,26 +39,25 @@ public class JarClassLoader extends ClassLoader {
     }
 
     public void loadJar() throws IOException {
-        JarFile jarFile = new JarFile(PATH_TO_JARS + jarFileName);
+        try (JarFile jarFile = new JarFile(PATH_TO_JARS + jarFileName)) {
+            Enumeration<JarEntry> jarEntries = jarFile.entries();
 
-        Enumeration<JarEntry> jarEntries = jarFile.entries();
+            while (jarEntries.hasMoreElements()) {
+                JarEntry jarEntry = jarEntries.nextElement();
+                if (jarEntry.isDirectory())
+                    continue;
 
-        while (jarEntries.hasMoreElements()) {
-            JarEntry jarEntry = jarEntries.nextElement();
-            if (jarEntry.isDirectory())
-                continue;
+                if (jarEntry.getName().endsWith(".class")) {
+                    byte[] classData = loadClassData(jarFile, jarEntry);
 
-            if (jarEntry.getName().endsWith(".class")) {
-                byte[] classData = loadClassData(jarFile, jarEntry);
-
-                if (classData != null) {
-                    String className = jarEntry.getName().replace('/', '.').substring(0,jarEntry.getName().length() - 6);
-                    Class<?> clazz = defineClass(className, classData, 0, classData.length);
-                    classCache.put(clazz.getName(), clazz);
+                    if (classData != null) {
+                        String className = jarEntry.getName().replace('/', '.').substring(0, jarEntry.getName().length() - 6);
+                        Class<?> clazz = defineClass(className, classData, 0, classData.length);
+                        classCache.put(clazz.getName(), clazz);
+                    }
                 }
             }
         }
-        jarFile.close();
     }
 
     private byte[] loadClassData(JarFile jarFile, JarEntry jarEntry) throws IOException {

@@ -21,11 +21,11 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        while(true) {
+        while (true) {
             showMenu();
             int choice = Integer.parseInt(scanner.nextLine());
 
-            switch(choice) {
+            switch (choice) {
                 case 1:
                     selectJar("Module1.jar");
                     break;
